@@ -20,7 +20,7 @@ namespace ZombieBot
 
         private bool Initialized = false;
 
-        public Abyxa(string name, int region, bool local)
+        public Abyxa(string name, string region, bool local)
         {
             URL = !local ? "http://www.abyxa.net/zombie/" : "http://localhost:80/zombie/";
             Log($"Server browser host: {URL}");
@@ -92,6 +92,25 @@ namespace ZombieBot
                 try
                 {
                     webClient.DownloadData(FormatURL("removefromqueue") + "&battletag=" + WebUtility.UrlEncode(battletag));
+                }
+                catch (WebException)
+                {
+                    Log(CouldNotConnect);
+                    return;
+                }
+            }
+        }
+
+        public void Kill()
+        {
+            if (!Initialized)
+                return;
+
+            using (WebClient webClient = new WebClient())
+            {
+                try
+                {
+                    webClient.DownloadData(FormatURL("kill"));
                 }
                 catch (WebException)
                 {

@@ -11,8 +11,6 @@ namespace ZombieBot
 {
     class Config
     {
-        private static readonly string[] Regions = new string[] { "us", "eu", "kr" };
-
         public static Config ParseConfig()
         {
             string configLocation = Extra.GetExecutingDirectory() + "config.xml";
@@ -35,7 +33,7 @@ namespace ZombieBot
                 Preset = ParseInt(document, "preset", min: -1, max:100, @default: -1),
 
                 Name = ParseString(document, "name", "Zombies - Infection"),
-                Region = Array.IndexOf(Regions, ParseString(document, "region", Regions)),
+                Region = ParseString(document, "region", "us", "eu", "kr"),
 
                 Local = Exists(document, "local")
             };
@@ -116,7 +114,7 @@ namespace ZombieBot
         public int Preset;
 
         public string Name;
-        public int Region;
+        public string Region;
 
         public bool Local;
     }

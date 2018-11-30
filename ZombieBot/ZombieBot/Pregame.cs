@@ -10,7 +10,7 @@ namespace ZombieBot
 {
     partial class Program
     {
-        public static bool Pregame(Abyxa abyxa, bool serverBrowser, CustomGame cg, Map[] maps, int minimumPlayers)
+        public static OperationResult Pregame(Abyxa abyxa, bool serverBrowser, CustomGame cg, Map[] maps, int minimumPlayers, CancellationToken cs)
         {
             int prevPlayerCount = 0;
             Stopwatch pregame = new Stopwatch();
@@ -26,15 +26,30 @@ namespace ZombieBot
             if (abyxa != null)
             {
                 abyxa.ZombieServer.Mode = Abyxa.Pregame;
+                UpdateMap(abyxa, cg);
                 abyxa.Update();
+            }
+
+            cg.Chat.SwapChannel(Channel.Match);
+
+            // Make game publc if there is less than 7 players.
+            if (serverBrowser)
+            {
+                if (cg.AllCount < 7)
+                    cg.Settings.JoinSetting = Join.Everyone;
+                else
+                    cg.Settings.JoinSetting = Join.InviteOnly;
             }
 
             try
             {
                 while (true)
                 {
+                    if (cs.IsCancellationRequested)
+                        return OperationResult.Canceled;
+
                     if (cg.IsDisconnected())
-                        return false;
+                        return OperationResult.Disconnected;
 
                     if (abyxa != null)
                         abyxa.Update();
@@ -98,7 +113,7 @@ namespace ZombieBot
                     if (pregame.ElapsedMilliseconds >= 15 * 1000)
                     {
                         SetupGame(abyxa, serverBrowser, cg, maps);
-                        return true;
+                        return OperationResult.Success;
                     }
                 }
             }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace ZombieBot
 {
     /// <summary>
-    /// Data sent from the server
+    /// Data sent to Abyxa
     /// </summary>
     public class ZombieServer
     {

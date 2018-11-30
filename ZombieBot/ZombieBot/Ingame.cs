@@ -10,7 +10,7 @@ namespace ZombieBot
 {
     partial class Program
     {
-        public static bool Ingame(Abyxa abyxa, bool serverBrowser, CustomGame cg, int version)
+        public static OperationResult Ingame(Abyxa abyxa, bool serverBrowser, CustomGame cg, int version, CancellationToken cs)
         {
             if (abyxa != null)
             {
@@ -39,8 +39,11 @@ namespace ZombieBot
 
             while (true)
             {
+                if (cs.IsCancellationRequested)
+                    return OperationResult.Canceled;
+
                 if (cg.IsDisconnected())
-                    return false;
+                    return OperationResult.Disconnected;
 
                 // Swap killed survivors to red
                 List<int> survivorsDead = cg.GetSlots(SlotFlags.Blue | SlotFlags.DeadOnly);
@@ -78,7 +81,7 @@ namespace ZombieBot
 
                     UpdateMap(abyxa, cg);
 
-                    return true;
+                    return OperationResult.Success;
                 }
 
                 /*

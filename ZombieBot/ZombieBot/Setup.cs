@@ -33,21 +33,7 @@ namespace ZombieBot
             cg.ToggleMap(ToggleAction.EnableAll);
             Thread.Sleep(500);
 
-            // Update map on website if jointype is abyxa.
-            UpdateMap(abyxa, cg);
-
             cg.StartGame();
-
-            cg.Chat.SwapChannel(Channel.Match);
-
-            // Make game publc if there is less than 7 players.
-            if (serverBrowser)
-            {
-                if (cg.AllCount < 7)
-                    cg.Settings.JoinSetting = Join.Everyone;
-                else
-                    cg.Settings.JoinSetting = Join.InviteOnly;
-            }
         }
     }
 }
