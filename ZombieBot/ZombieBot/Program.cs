@@ -48,7 +48,6 @@ namespace ZombieBot
             Console.WriteLine(header);
 
             var ts = new CancellationTokenSource();
-            CancellationToken ct = ts.Token;
 
             Config config = Config.ParseConfig();
 
@@ -70,13 +69,13 @@ namespace ZombieBot
 
                 switch(inputSplit[0].ToLower())
                 {
-                    #region Help Command
+                    #region help Command
                     case "help":
                         Console.WriteLine(string.Join("\n    ", "Usage:", START, STOP, START_GAME, SEND, INVITE, MOVE, PLAYER_COUNT));
                         break;
                     #endregion
 
-                    #region Clear Command
+                    #region clear Command
                     case "clear":
                     case "cls":
                         Console.Clear();
@@ -84,7 +83,7 @@ namespace ZombieBot
                         break;
                     #endregion
 
-                    #region Start Command
+                    #region start Command
                     case "start":
                         if (Initialized)
                         {
@@ -93,13 +92,13 @@ namespace ZombieBot
                         }
 
                         config.Local = config.Local || FindOption(input, "--local");
-                        bool skipStartup = FindOption(input, "--skipstartup");
+                        bool skipSetup = FindOption(input, "--skipsetup");
 
-                        Start(config, skipStartup, ct);
+                        Start(config, skipSetup, ts.Token);
                         break;
                     #endregion
 
-                    #region Stop Command
+                    #region stop Command
                     case "stop":
                         if (!Initialized)
                         {
@@ -124,13 +123,17 @@ namespace ZombieBot
 
                         Console.WriteLine("Starting Overwatch...");
 
+                        bool createCustomGame = FindOption(input, "--createcustomgame", "-ccg");
+
                         try
                         {
                             CustomGame.StartOverwatch(new OverwatchInfoAuto()
                             {
-                                AutomaticallyCreateCustomGame = false,
+                                AutomaticallyCreateCustomGame = createCustomGame,
                                 CloseOverwatchProcessOnFailure = false,
-                                ScreenshotMethod = config.ScreenshotMethod
+                                ScreenshotMethod = config.ScreenshotMethod,
+                                BattlenetExecutableFilePath = config.BattlenetExecutable,
+                                OverwatchSettingsFilePath = config.OverwatchSettingsFile
                             });
                             Console.WriteLine("Overwatch started.");
                         }
@@ -141,7 +144,7 @@ namespace ZombieBot
                         break;
                     #endregion
 
-                    #region Send Command
+                    #region send Command
                     case "send":
                         if (!Initialized)
                         {
@@ -156,7 +159,7 @@ namespace ZombieBot
                         break;
                     #endregion
 
-                    #region Invite Command
+                    #region invite Command
                     case "invite":
                         if (!Initialized)
                         {
@@ -172,7 +175,7 @@ namespace ZombieBot
                         break;
                     #endregion
 
-                    #region Move Command
+                    #region move Command
                     case "move":
                         if (!Initialized)
                         {
@@ -187,7 +190,7 @@ namespace ZombieBot
                         break;
                     #endregion
 
-                    #region PlayerCount Command
+                    #region playercount Command
                     case "playercount":
                         if (!Initialized)
                         {
@@ -210,7 +213,7 @@ namespace ZombieBot
             return Regex.IsMatch(text, @"(?<= )(" + string.Join("|", variants) + @")\b");
         }
 
-        private static void Start(Config config, bool skipStartup, CancellationToken cs)
+        private static void Start(Config config, bool skipSetup, CancellationToken cs)
         {
             Initialized = true;
 
@@ -230,7 +233,12 @@ namespace ZombieBot
                 {
                     cg = new CustomGame(new CustomGameBuilder()
                     {
-                        OverwatchProcess = CustomGame.GetOverwatchProcess() ?? CustomGame.StartOverwatch(),
+                        OverwatchProcess = CustomGame.GetOverwatchProcess() ?? CustomGame.StartOverwatch(new OverwatchInfoAuto()
+                        {
+                            BattlenetExecutableFilePath = config.BattlenetExecutable,
+                            OverwatchSettingsFilePath = config.OverwatchSettingsFile,
+                            ScreenshotMethod = config.ScreenshotMethod
+                        }),
                         ScreenshotMethod = config.ScreenshotMethod
                     });
                     cg.Commands.Listen = true;
@@ -244,7 +252,7 @@ namespace ZombieBot
                         operationResult = OperationResult.Canceled;
                     else
                     {
-                        if (!skipStartup)
+                        if (!skipSetup)
                             Setup(abyxa, serverBrowser, cg, maps, config.Preset, config.Name);
 
                         if (cs.IsCancellationRequested)
@@ -263,6 +271,10 @@ namespace ZombieBot
                 {
                     operationResult = OperationResult.Exited;
                 }
+                catch (OverwatchStartFailedException)
+                {
+                    operationResult = OperationResult.StartFailed;
+                }
 
                 cg.Dispose();
                 cg = null;
@@ -276,6 +288,8 @@ namespace ZombieBot
                     Log("Overwatch disconnected, bot stopped.");
                 else if (operationResult == OperationResult.Exited)
                     Log("Overwatch exited, bot stopped.");
+                else if (operationResult == OperationResult.StartFailed)
+                    Log("Could not start Overwatch, bot stopped.");
 
                 Initialized = false;
             });
@@ -284,11 +298,16 @@ namespace ZombieBot
         private static string UpdateMap(Abyxa abyxa, CustomGame cg)
         {
             string currentMap = cg.GetCurrentMap()?.FirstOrDefault()?.ShortName;
-            if (currentMap != null && abyxa != null)
+            if (currentMap != null)
             {
-                abyxa.ZombieServer.Map = currentMap;
-                abyxa.Update();
+                if (abyxa != null)
+                {
+                    abyxa.ZombieServer.Map = currentMap;
+                    abyxa.Update();
+                }
             }
+            else
+                Log("Could not detect current map.");
             return currentMap;
         }
 
@@ -303,6 +322,7 @@ namespace ZombieBot
         Disconnected,
         Exited,
         Canceled,
+        StartFailed,
         Success,
     }
 }

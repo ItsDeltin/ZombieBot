@@ -30,10 +30,14 @@ namespace ZombieBot
                 DefaultMode = ParseString(document, "defaultMode", "abyxa", "serverbrowser", "private"),
                 OverwatchEvent = ParseString(document, "overwatchEvent", OWEvent.None),
                 ScreenshotMethod = ParseString(document, "screenshotMethod", ScreenshotMethod.BitBlt),
-                Preset = ParseInt(document, "preset", min: -1, max:100, @default: -1),
+                Preset = ParseInt(document, "preset", min: -1, max: 100, @default: -1),
 
                 Name = ParseString(document, "name", "Zombies - Infection"),
                 Region = ParseString(document, "region", "us", "eu", "kr"),
+
+                BattlenetExecutable = ParseString(document, "battlenetExecutable", new OverwatchInfoAuto().BattlenetExecutableFilePath),
+                OverwatchSettingsFile = ParseString(document, "overwatchSettingsFile", new OverwatchInfoAuto().OverwatchSettingsFilePath)
+                    .Replace("{username}", Environment.UserName),
 
                 Local = Exists(document, "local")
             };
@@ -115,6 +119,9 @@ namespace ZombieBot
 
         public string Name;
         public string Region;
+
+        public string BattlenetExecutable;
+        public string OverwatchSettingsFile;
 
         public bool Local;
     }

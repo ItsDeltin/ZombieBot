@@ -9,4 +9,8 @@
   
   <name>Zombies - Infection</name> <!-- The name of the game that shows up at https://www.abyxa.net/zombie -->
   <region>us</region> <!-- US, EU, or KR -->
+  
+  <!-- File locations -->
+  <battlenetExecutable>C:\Program Files (x86)\Blizzard App\Battle.net.exe</battlenetExecutable>
+  <overwatchSettingsFile>C:\Users\{username}\Documents\Overwatch\Settings\Settings_v0.ini</overwatchSettingsFile>
 </config>
