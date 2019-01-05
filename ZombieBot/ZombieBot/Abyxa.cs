@@ -1,4 +1,4 @@
-﻿using System;
+﻿    using System;
 using System.Threading.Tasks;
 using System.Net;
 using System.Collections.Generic;
@@ -30,6 +30,7 @@ namespace ZombieBot
                 try
                 {
                     string createJson = webClient.DownloadString(string.Format("{0}create?name={1}&region={2}", URL, name, region));
+                    Console.WriteLine(createJson);
                     dynamic json = JsonConvert.DeserializeObject(createJson);
 
                     AccessInfo = string.Format("?id={0}&crypt={1}", json.id, json.crypt);

@@ -69,17 +69,19 @@ namespace ZombieBot
 
                     InviteQueueToGame(abyxa, cg, minimumPlayers);
 
+                    var invitedSlots = cg.GetInvitedSlots();
+                    int playerCount = PlayingCount - invitedSlots.Count;
+
                     // update server
                     if (abyxa != null)
                     {
-                        abyxa.ZombieServer.PlayerCount = PlayingCountIngame;
-                        abyxa.ZombieServer.InvitedCount = cg.GetInvitedCount();
+                        abyxa.ZombieServer.PlayerCount = playerCount;
+                        abyxa.ZombieServer.InvitedCount = invitedSlots.Count;
                         abyxa.Update();
                     }
 
                     // Send a message when someone joins
-                    int playerCount = PlayingCountIngame;
-                    if (PlayingCountIngame > prevPlayerCount)
+                    if (playerCount > prevPlayerCount)
                     {
                         int wait = minimumPlayers - playerCount;
                         if (wait > 1) cg.Chat.SendChatMessage("Welcome to Zombies! Waiting for " + wait + " more players. I am a bot, source is at the github repository ItsDeltin/Overwatch-Custom-Game-Automation");
@@ -229,8 +231,6 @@ namespace ZombieBot
         }
 
         private static int PlayingCount { get { return cg.GetCount(SlotFlags.BlueAndRed | SlotFlags.Queue); } }
-        private static int PlayingCountIngame { get { return cg.GetCount(SlotFlags.BlueAndRed | SlotFlags.Queue | SlotFlags.IngameOnly); } }
         private static List<int> PlayingSlots { get { return cg.GetSlots(SlotFlags.BlueAndRed | SlotFlags.Queue); } }
-        private static List<int> PlayingSlotsIngame { get { return cg.GetSlots(SlotFlags.BlueAndRed | SlotFlags.Queue | SlotFlags.IngameOnly); } }
     }
 } 

@@ -93,8 +93,9 @@ namespace ZombieBot
 
                         config.Local = config.Local || FindOption(input, "--local");
                         bool skipSetup = FindOption(input, "--skipsetup");
+                        bool debug = FindOption(input, "--debug");
 
-                        Start(config, skipSetup, ts.Token);
+                        Start(config, skipSetup, debug, ts.Token);
                         break;
                     #endregion
 
@@ -109,6 +110,7 @@ namespace ZombieBot
                         Console.WriteLine("Stopping bot...");
                         ts.Cancel();
                         ZombieBotTask.Wait();
+                        ts = new CancellationTokenSource();
 
                         break;
                     #endregion
@@ -198,7 +200,7 @@ namespace ZombieBot
                             break;
                         }
 
-                        Console.WriteLine(PlayingCountIngame);
+                        Console.WriteLine(PlayingCount - cg.GetInvitedCount());
                         break;
                     #endregion
 
@@ -213,7 +215,7 @@ namespace ZombieBot
             return Regex.IsMatch(text, @"(?<= )(" + string.Join("|", variants) + @")\b");
         }
 
-        private static void Start(Config config, bool skipSetup, CancellationToken cs)
+        private static void Start(Config config, bool skipSetup, bool debug, CancellationToken cs)
         {
             Initialized = true;
 
@@ -240,6 +242,9 @@ namespace ZombieBot
                             ScreenshotMethod = config.ScreenshotMethod
                         }),
                         ScreenshotMethod = config.ScreenshotMethod
+#if DEBUG
+                        , DebugMode = debug
+#endif
                     });
                     cg.Commands.Listen = true;
 
