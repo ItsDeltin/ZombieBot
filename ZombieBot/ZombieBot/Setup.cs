@@ -14,7 +14,7 @@ namespace ZombieBot
             if (abyxa != null)
                 cg.Settings.JoinSetting = Join.InviteOnly;
 
-            if (preset != null)
+            if (preset != "")
                 cg.Settings.LoadPreset(preset);
 
             int moderatorSlot = cg.PlayerInfo.ModeratorSlot();

@@ -30,7 +30,7 @@ namespace ZombieBot
                 DefaultMode = ParseString(document, "defaultMode", "abyxa", "serverbrowser", "private"),
                 OverwatchEvent = ParseString(document, "overwatchEvent", OWEvent.None),
                 ScreenshotMethod = ParseString(document, "screenshotMethod", ScreenshotMethod.BitBlt),
-                Preset = ParseString(document, "preset", @default:null)
+                Preset = ParseString(document, "preset", @default:"")
                     .Trim(),
 
                 Name = ParseString(document, "name", "Zombies - Infection"),
