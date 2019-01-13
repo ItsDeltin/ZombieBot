@@ -30,7 +30,8 @@ namespace ZombieBot
                 DefaultMode = ParseString(document, "defaultMode", "abyxa", "serverbrowser", "private"),
                 OverwatchEvent = ParseString(document, "overwatchEvent", OWEvent.None),
                 ScreenshotMethod = ParseString(document, "screenshotMethod", ScreenshotMethod.BitBlt),
-                Preset = ParseInt(document, "preset", min: -1, max: 100, @default: -1),
+                Preset = ParseString(document, "preset", @default:null)
+                    .Trim(),
 
                 Name = ParseString(document, "name", "Zombies - Infection"),
                 Region = ParseString(document, "region", "us", "eu", "kr"),
@@ -115,7 +116,7 @@ namespace ZombieBot
         public string DefaultMode;
         public OWEvent OverwatchEvent;
         public ScreenshotMethod ScreenshotMethod;
-        public int Preset;
+        public string Preset;
 
         public string Name;
         public string Region;

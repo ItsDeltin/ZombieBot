@@ -7,14 +7,14 @@ namespace ZombieBot
 {
     partial class Program
     {
-        public static void Setup(Abyxa abyxa, bool serverBrowser, CustomGame cg, Map[] maps, int preset, string name)
+        public static void Setup(Abyxa abyxa, bool serverBrowser, CustomGame cg, Map[] maps, string preset, string name)
         {
             cg.AI.RemoveAllBotsAuto();
 
             if (abyxa != null)
                 cg.Settings.JoinSetting = Join.InviteOnly;
 
-            if (preset > -1)
+            if (preset != null)
                 cg.Settings.LoadPreset(preset);
 
             int moderatorSlot = cg.PlayerInfo.ModeratorSlot();
