@@ -199,6 +199,10 @@ namespace ZombieBot
                 cg.Interact.SwapToRed(choose);
             }
 
+            string zombie1Name = cg.GetPlayerName(18),
+                zombie2Name = cg.GetPlayerName(19);
+            cg.Chat.SendChatMessage($"{zombie1Name} and {zombie2Name} are the starting zombies.");
+
             // Start game
             cg.Chat.SendChatMessage("Starting game...");
 
