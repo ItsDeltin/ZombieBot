@@ -242,9 +242,6 @@ namespace ZombieBot
                             ScreenshotMethod = config.ScreenshotMethod
                         }),
                         ScreenshotMethod = config.ScreenshotMethod
-#if DEBUG
-                        , DebugMode = debug
-#endif
                     });
                     cg.Commands.Listen = true;
 

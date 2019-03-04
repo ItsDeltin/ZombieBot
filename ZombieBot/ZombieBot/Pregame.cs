@@ -20,7 +20,7 @@ namespace ZombieBot
             // Create the PlayerTracker
             PlayerTracker playerTracker = new PlayerTracker();
             // Add the $SWAPME command
-            ListenTo swapMeCommand = new ListenTo(command:"$SWAPME", listen:true, registerProfile:true, checkIfFriend:false, callback:(commandData) => OnSwapMe(commandData, cg, playerTracker));
+            ListenTo swapMeCommand = new ListenTo(command:"$SWAPME", listen:true, getNameAndProfile:true, checkIfFriend:false, callback:(commandData) => OnSwapMe(commandData, cg, playerTracker));
             cg.Commands.ListenTo.Add(swapMeCommand);
 
             if (abyxa != null)
@@ -131,7 +131,10 @@ namespace ZombieBot
             cg.TrackPlayers(playerTracker, SlotFlags.BlueAndRed);
             int slot = playerTracker.SlotFromPlayerIdentity(commandData.PlayerIdentity);
             if (slot != -1)
+            {
                 cg.Interact.SwapTeam(slot);
+                cg.Chat.SendChatMessage($"Swapping {commandData.PlayerName}'s team.");
+            }
         }
 
         private static void SetupGame(Abyxa abyxa, bool serverBrowser, CustomGame cg, Map[] maps)
